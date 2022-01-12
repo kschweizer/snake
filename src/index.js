@@ -1,12 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import Snake from './Snake';
+import Snake2 from './Snake2';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <h1>SNAKE!</h1>
+    <div className="textWrapper">
+      <p className="subTitle">
+      </p>
+      <p id="instructions">Use the arrow keys or W/A/S/D to play</p>
+    </div>
+    <Snake />
   </React.StrictMode>,
   document.getElementById('root')
 );
