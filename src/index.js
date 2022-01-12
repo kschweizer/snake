@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Snake from './Snake';
-import Snake2 from './Snake2';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(

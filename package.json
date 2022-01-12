@@ -1,5 +1,6 @@
 {
   "name": "snake",
+  "homepage": "https://kschweizer.github.io/snake",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

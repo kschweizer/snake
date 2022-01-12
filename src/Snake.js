@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import GameOver from './GameOver';
 import './Snake.css';
 
@@ -41,26 +41,6 @@ const getRandomColor = () => {
     }
     return color;
 }
-
-const initialState = {
-    init: true,
-    score: 0,
-    width: 0,
-    height: 0, 
-    blockWidth: 0,
-    blockHeight: 0,
-    gameLoopTimeout: 50,
-    startSnakeSize: 6,
-    snake: [],
-    food: {},
-    direction: 'RIGHT',
-    directionChanged: false,
-    isGameOver: false,
-    snakeColor: getRandomColor(),
-    foodColor: getRandomColor(),
-    highScore: Number(localStorage.getItem('snakeHighScore')) || 0,
-    newHighScore: false
-};
 
 const isSnakeEating = (snakeHead, food) => {
     return snakeHead.x === food.x && snakeHead.y === food.y;
@@ -183,12 +163,11 @@ const reducer = (state, action) => {
                 directionChanged: false
             };
 
-        case 'GAME_OVER':
+        case 'GAME_OVER': 
             return {
                 ...state,
                 isGameOver: true
             };
-
 
         case 'RESET_GAME':
             // reset snake
@@ -231,8 +210,25 @@ const reducer = (state, action) => {
     }
 };
 
-
-
+const initialState = {
+    init: true,
+    score: 0,
+    width: 0,
+    height: 0, 
+    blockWidth: 0,
+    blockHeight: 0,
+    gameLoopTimeout: 50,
+    startSnakeSize: 6,
+    snake: [],
+    food: {},
+    direction: 'RIGHT',
+    directionChanged: false,
+    isGameOver: false,
+    snakeColor: getRandomColor(),
+    foodColor: getRandomColor(),
+    highScore: Number(localStorage.getItem('snakeHighScore')) || 0,
+    newHighScore: false
+};
 
 const Snake = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -250,8 +246,13 @@ const Snake = () => {
             : state.food;
         
         const newSnake = [newSnakeHead, ...tail];
-
-        if (snakeEating) {
+        
+        if (isSnakeDead(newSnake)) {
+            dispatch({
+                type: 'GAME_OVER'
+            });
+        }
+        else if (snakeEating) {
             let highScore = state.highScore;
             if (state.score === state.highScore) {
                 highScore++;
@@ -279,6 +280,7 @@ const Snake = () => {
             });
             return
         }
+
         if (state.directionChanged) return;
         if (MAP_KEYS[event.keyCode]) {
             dispatch({
@@ -293,7 +295,7 @@ const Snake = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [state.isGameOver]);
 
     useEffect(() => {
         dispatch({
@@ -304,12 +306,7 @@ const Snake = () => {
     useEffect(() => {
         if (state.init) return;
         const onTick = () => {
-            if (isSnakeDead(state.snake)) {
-                dispatch({
-                    type: 'GAME_OVER'
-                });
-            }
-            else if (!state.isGameOver) {
+            if (!state.isGameOver) {
                 moveSnake(state);
             }
         };
@@ -319,16 +316,9 @@ const Snake = () => {
         return () => clearInterval(interval);
     }, [state]);
 
-    //useEffect(() => {
-      //  gameLoop();
-        //return () => {
-          //  clearTimeout(state.timeoutId);
-        //}
-    //}, []);
-
     if (state.isGameOver) {
         return (
-            <GameOver />
+            <GameOver score={state.score} highScore={state.highScore} />
         );
     } else {
         return (
